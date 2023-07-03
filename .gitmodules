@@ -1,0 +1,6 @@
+[submodule "Mastodon.py"]
+	path = Mastodon.py
+	url = https://github.com/gongitsune/Mastodon.py.git
+[submodule "truthbrush"]
+	path = truthbrush
+	url = https://github.com/stanfordio/truthbrush.git
