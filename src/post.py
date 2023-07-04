@@ -1,18 +1,38 @@
+import json
 import os
-from truthbrush import Api
-from mastodon import Mastodon
+import pathlib
 import time
+
 from dotenv import load_dotenv
+from mastodon import Mastodon
+
+from truthbrush import Api
 
 load_dotenv(".env.local")
+
+
+def get_access_token(email: str, passwd: str) -> str:
+    """アクセストークンの取得と永続化"""
+    data_path = pathlib.Path("data.local")
+    if data_path.exists():
+        with open(data_path, mode="r") as f:
+            data = json.load(f)
+            if "access_token" in data:
+                return data["access_token"]
+    with open(data_path, mode="w") as f:
+        # なければ取得
+        truth = Api(email, passwd)
+        access_token = truth.get_auth_id(email, passwd)
+        json.dump({"access_token": access_token}, f)
+        return access_token
+
 
 email = os.environ["EMAIL"]
 passwd = os.environ["PASSWD"]
 if not email or not passwd:
     print("Set EMAIL and PASSWD in env or .env.local")
 
-truth = Api(email, passwd)
-access_token = truth.get_auth_id(email, passwd)
+access_token = get_access_token(email, passwd)
 
 # 初期化
 time.sleep(1)
